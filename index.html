@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>A Message for Rachael</title>
+    <title>For Rachael</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -42,7 +42,7 @@
             -webkit-backdrop-filter: blur(10px);
             width: 85%;
             max-width: 500px;
-            min-height: 350px;
+            min-height: 400px;
             padding: 35px;
             border-radius: 24px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
@@ -50,6 +50,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            position: relative;
         }
 
         .slide { display: none; animation: slideIn 0.5s ease forwards; }
@@ -60,15 +61,22 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        h2 { color: var(--primary); margin-bottom: 15px; }
-        p { color: #444; line-height: 1.6; font-size: 1.2rem; min-height: 100px; display: flex; align-items: center; justify-content: center;}
+        /* Pulsing Animation for the Star */
+        @keyframes pulse {
+            0% { transform: scale(1); filter: drop-shadow(0 0 0px #f1c40f); }
+            50% { transform: scale(1.3); filter: drop-shadow(0 0 15px #f1c40f); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 0px #f1c40f); }
+        }
+        .pulse-star { animation: pulse 1.5s infinite ease-in-out; display: inline-block; }
+
+        p { color: #444; line-height: 1.6; font-size: 1.2rem; min-height: 120px; display: flex; align-items: center; justify-content: center; margin: 20px 0;}
+        .icon-box { font-size: 3.5rem; margin-bottom: 10px; height: 70px; }
 
         .typewriter::after { content: "|"; animation: blink 0.7s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
 
         input { padding: 12px; border: 2px solid var(--accent); border-radius: 12px; width: 80%; margin-bottom: 20px; text-align: center; font-size: 1rem; outline: none; }
-
-        .btn-group { margin-top: 25px; display: flex; justify-content: center; gap: 10px; }
+        .btn-group { margin-top: 10px; display: flex; justify-content: center; gap: 10px; }
         
         button { padding: 12px 25px; border: none; border-radius: 12px; background: var(--primary); color: white; font-weight: bold; cursor: pointer; transition: all 0.2s; }
         button:hover { transform: translateY(-2px); filter: brightness(1.1); }
@@ -82,7 +90,7 @@
 
 <div class="card">
     <div id="slide-0" class="slide active">
-        <i class="fas fa-heart" style="font-size: 3rem; color: #e73c7e; margin-bottom: 15px;"></i>
+        <div class="icon-box"><i class="fas fa-heart" style="color: #e73c7e;"></i></div>
         <h2>A Message for You</h2>
         <p>Please enter your name to begin:</p>
         <input type="text" id="nameInput" placeholder="Enter your name...">
@@ -91,6 +99,7 @@
     </div>
 
     <div id="message-container" class="slide">
+        <div class="icon-box" id="dynamic-icon"></div>
         <p id="type-area" class="typewriter"></p>
         
         <div class="btn-group">
@@ -132,7 +141,7 @@
         speed: 40
     };
 
-    let currentIdx = -1; // -1 means we are on the login slide
+    let currentIdx = -1;
 
     function checkName() {
         const val = document.getElementById('nameInput').value.trim();
@@ -155,19 +164,30 @@
     function goToSlide(n) {
         currentIdx = n;
         const total = CONFIG.messages.length;
+        const iconArea = document.getElementById('dynamic-icon');
         
         // Progress Bar
         document.getElementById('progress-bar').style.width = ((n + 1) / total) * 100 + "%";
         
+        // Icon Logic
+        if (n < 5) {
+            iconArea.innerHTML = '<i class="fas fa-book-open" style="color: var(--primary);"></i>';
+        } else if (n < 15) {
+            iconArea.innerHTML = '<i class="fas fa-lightbulb" style="color: #f1c40f;"></i>';
+        } else if (n < total - 1) {
+            iconArea.innerHTML = '<i class="fas fa-graduation-cap" style="color: #3498db;"></i>';
+        } else {
+            // APPLY PULSE ANIMATION TO STAR
+            iconArea.innerHTML = '<div class="pulse-star"><i class="fas fa-star" style="color: #f1c40f;"></i></div>';
+        }
+
         // Buttons
         document.getElementById('prevBtn').style.display = (n === 0) ? 'none' : 'block';
         document.getElementById('nextBtn').style.display = (n === total - 1) ? 'none' : 'block';
         document.getElementById('restartBtn').style.display = (n === total - 1) ? 'block' : 'none';
 
-        // Typewriter Effect
         typeEffect(document.getElementById('type-area'), CONFIG.messages[n]);
 
-        // Celebrate on the very last slide
         if (n === total - 1) {
             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
         }

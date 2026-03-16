@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Rachael</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --accent: #a29bfe;
+            --glass: rgba(255, 255, 255, 0.9);
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            overflow: hidden;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        #progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 6px; background: rgba(0,0,0,0.1); z-index: 1000; }
+        #progress-bar { height: 100%; width: 0%; background: white; box-shadow: 0 0 10px white; transition: width 0.5s ease; }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            width: 85%;
+            max-width: 500px;
+            min-height: 350px;
+            padding: 35px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide { display: none; animation: slideIn 0.5s ease forwards; }
+        .active { display: block; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 { color: var(--primary); margin-bottom: 15px; }
+        p { color: #444; line-height: 1.6; font-size: 1.1rem; }
+
+        .typewriter::after { content: "|"; animation: blink 0.7s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        input {
+            padding: 12px;
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            width: 80%;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .btn-group { margin-top: 25px; display: flex; justify-content: center; gap: 10px; }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 12px;
+            background: var(--primary);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .secondary-btn { background: rgba(0,0,0,0.05); color: #555; }
+    </style>
+</head>
+<body>
+
+<div id="progress-container"><div id="progress-bar"></div></div>
+
+<div class="card">
+    <div id="slide-0" class="slide active">
+        <i class="fas fa-heart" style="font-size: 3rem; color: #e73c7e; margin-bottom: 15px;"></i>
+        <h2>A Message for You</h2>
+        <p>Please enter your name to begin:</p>
+        <input type="text" id="nameInput" placeholder="Enter your name...">
+        <br>
+        <button onclick="checkName()">Unlock</button>
+    </div>
+
+    <div id="slide-1" class="slide"><p id="text-1" class="typewriter"></p></div>
+    <div id="slide-2" class="slide"><p id="text-2" class="typewriter"></p></div>
+    <div id="slide-3" class="slide"><p id="text-3" class="typewriter"></p></div>
+    <div id="slide-4" class="slide"><p id="text-4" class="typewriter"></p></div>
+    <div id="slide-5" class="slide">
+        <i class="fas fa-star" style="font-size: 2rem; color: #f1c40f; margin-bottom: 10px;"></i>
+        <p id="text-5" class="typewriter"></p>
+        <p style="margin-top:20px; font-weight:bold;">- With encouragement and belief in you, [T.I.A]</p>
+        <button onclick="location.reload()" class="secondary-btn" style="margin-top:20px;">Read Again</button>
+    </div>
+
+    <div id="nav-controls" class="btn-group" style="display:none;">
+        <button id="prevBtn" class="secondary-btn" onclick="changeSlide(-1)">Previous</button>
+        <button id="nextBtn" onclick="changeSlide(1)">Next</button>
+    </div>
+</div>
+
+<script>
+    const CONFIG = {
+        recipient: "Rachael",
+        messages: [
+            "", 
+            "Dear Rachael, I hope you are doing well. As you prepare for your KJSEA exams at the end of the year, I want you to remember something very important: you are capable, strong, and able to succeed.",
+            "Exams can sometimes feel difficult or stressful, but never forget that you have the ability to do well. You have been learning, growing, and preparing, and all that effort will help you when the time comes.",
+            "I truly believe in you. You are stronger and smarter than you may sometimes think. When things feel challenging, take a deep breath, stay focused, and keep going.",
+            "Remember, I went through the same exams and passed them. If I could do it, you can do it too. You are just as capable of achieving great results.",
+            "Stay determined, stay positive, and keep believing in yourself. I am proud of you, Rachael, and confident that you will do your best. Wishing you success!"
+        ],
+        speed: 40
+    };
+
+    let currentSlide = 0;
+    const totalSlides = 5;
+
+    function checkName() {
+        const val = document.getElementById('nameInput').value.trim();
+        if (val.toLowerCase() === CONFIG.recipient.toLowerCase()) {
+            document.getElementById('nav-controls').style.display = 'flex';
+            goToSlide(1);
+        } else {
+            alert("This card is specifically for Rachael!");
+        }
+    }
+
+    function changeSlide(n) {
+        let target = currentSlide + n;
+        if (target >= 1 && target <= totalSlides) goToSlide(target);
+    }
+
+    function goToSlide(n) {
+        document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+        document.getElementById(`slide-${n}`).classList.add('active');
+        currentSlide = n;
+
+        document.getElementById('progress-bar').style.width = (n / totalSlides) * 100 + "%";
+        document.getElementById('prevBtn').disabled = (n === 1);
+        document.getElementById('nextBtn').style.display = (n === totalSlides) ? 'none' : 'block';
+
+        typeEffect(document.getElementById(`text-${n}`), CONFIG.messages[n]);
+
+        if (n === totalSlides) {
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+        }
+    }
+
+    function typeEffect(el, text) {
+        el.innerHTML = "";
+        let i = 0;
+        function play() {
+            if (i < text.length) {
+                el.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(play, CONFIG.speed);
+            }
+        }
+        play();
+    }
+</script>
+</body>
+</html>

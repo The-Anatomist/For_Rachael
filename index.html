@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For Rachael</title>
+    <title>A Message for Rachael</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
@@ -61,35 +61,16 @@
         }
 
         h2 { color: var(--primary); margin-bottom: 15px; }
-        p { color: #444; line-height: 1.6; font-size: 1.1rem; }
+        p { color: #444; line-height: 1.6; font-size: 1.2rem; min-height: 100px; display: flex; align-items: center; justify-content: center;}
 
         .typewriter::after { content: "|"; animation: blink 0.7s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
 
-        input {
-            padding: 12px;
-            border: 2px solid var(--accent);
-            border-radius: 12px;
-            width: 80%;
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 1rem;
-            outline: none;
-        }
+        input { padding: 12px; border: 2px solid var(--accent); border-radius: 12px; width: 80%; margin-bottom: 20px; text-align: center; font-size: 1rem; outline: none; }
 
         .btn-group { margin-top: 25px; display: flex; justify-content: center; gap: 10px; }
         
-        button {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 12px;
-            background: var(--primary);
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
+        button { padding: 12px 25px; border: none; border-radius: 12px; background: var(--primary); color: white; font-weight: bold; cursor: pointer; transition: all 0.2s; }
         button:hover { transform: translateY(-2px); filter: brightness(1.1); }
         button:disabled { background: #ccc; cursor: not-allowed; }
         .secondary-btn { background: rgba(0,0,0,0.05); color: #555; }
@@ -109,20 +90,14 @@
         <button onclick="checkName()">Unlock</button>
     </div>
 
-    <div id="slide-1" class="slide"><p id="text-1" class="typewriter"></p></div>
-    <div id="slide-2" class="slide"><p id="text-2" class="typewriter"></p></div>
-    <div id="slide-3" class="slide"><p id="text-3" class="typewriter"></p></div>
-    <div id="slide-4" class="slide"><p id="text-4" class="typewriter"></p></div>
-    <div id="slide-5" class="slide">
-        <i class="fas fa-star" style="font-size: 2rem; color: #f1c40f; margin-bottom: 10px;"></i>
-        <p id="text-5" class="typewriter"></p>
-        <p style="margin-top:20px; font-weight:bold;">- With encouragement and belief in you, [T.I.A]</p>
-        <button onclick="location.reload()" class="secondary-btn" style="margin-top:20px;">Read Again</button>
-    </div>
-
-    <div id="nav-controls" class="btn-group" style="display:none;">
-        <button id="prevBtn" class="secondary-btn" onclick="changeSlide(-1)">Previous</button>
-        <button id="nextBtn" onclick="changeSlide(1)">Next</button>
+    <div id="message-container" class="slide">
+        <p id="type-area" class="typewriter"></p>
+        
+        <div class="btn-group">
+            <button id="prevBtn" class="secondary-btn" onclick="changeSlide(-1)">Back</button>
+            <button id="nextBtn" onclick="changeSlide(1)">Next</button>
+            <button id="restartBtn" class="secondary-btn" onclick="location.reload()" style="display:none;">Read Again</button>
+        </div>
     </div>
 </div>
 
@@ -130,46 +105,70 @@
     const CONFIG = {
         recipient: "Rachael",
         messages: [
-            "", 
-            "Dear Rachael, I hope you are doing well. As you prepare for your KJSEA exams at the end of the year, I want you to remember something very important: you are capable, strong, and able to succeed.",
-            "Exams can sometimes feel difficult or stressful, but never forget that you have the ability to do well. You have been learning, growing, and preparing, and all that effort will help you when the time comes.",
-            "I truly believe in you. You are stronger and smarter than you may sometimes think. When things feel challenging, take a deep breath, stay focused, and keep going.",
-            "Remember, I went through the same exams and passed them. If I could do it, you can do it too. You are just as capable of achieving great results.",
-            "Stay determined, stay positive, and keep believing in yourself. I am proud of you, Rachael, and confident that you will do your best. Wishing you success!"
+            "Dear Rachael, I hope you are doing well.",
+            "As you prepare for your KJSEA exams at the end of the year, I want you to remember something very important.",
+            "You are capable, strong, and able to succeed.",
+            "I know that preparing for exams can sometimes feel overwhelming or stressful.",
+            "There may be days when the work feels heavy or when you doubt yourself.",
+            "But in those moments, I want you to remember how far you have already come.",
+            "Every lesson you study, every question you practice, and every effort you make is helping you grow stronger and more prepared.",
+            "Please never underestimate yourself.",
+            "You have been learning, improving, and building your knowledge step by step.",
+            "Even when progress feels slow, it is still progress.",
+            "Your hard work, patience, and determination will guide you when the exam time comes.",
+            "I truly believe in you, Rachael.",
+            "You are more capable than you may sometimes realize.",
+            "Whenever things feel difficult, pause for a moment, take a deep breath, and remind yourself that you can do this.",
+            "Challenges are not there to stop you—they are there to help you discover just how strong and capable you really are.",
+            "Remember, I went through the same exams and passed them.",
+            "I know what it feels like to face them, and I also know that with effort and belief in yourself, success is possible.",
+            "If I could do it, you can do it too.",
+            "You have the strength and ability to achieve great results.",
+            "Stay determined, stay positive, and keep believing in yourself.",
+            "I am proud of you, Rachael, and confident that you will do your best.",
+            "Wishing you success and strength as you prepare.",
+            "With encouragement and belief in you, [T.I.A]"
         ],
         speed: 40
     };
 
-    let currentSlide = 0;
-    const totalSlides = 5;
+    let currentIdx = -1; // -1 means we are on the login slide
 
     function checkName() {
         const val = document.getElementById('nameInput').value.trim();
         if (val.toLowerCase() === CONFIG.recipient.toLowerCase()) {
-            document.getElementById('nav-controls').style.display = 'flex';
-            goToSlide(1);
+            document.getElementById('slide-0').style.display = 'none';
+            document.getElementById('message-container').style.display = 'block';
+            goToSlide(0);
         } else {
             alert("This card is specifically for Rachael!");
         }
     }
 
     function changeSlide(n) {
-        let target = currentSlide + n;
-        if (target >= 1 && target <= totalSlides) goToSlide(target);
+        let target = currentIdx + n;
+        if (target >= 0 && target < CONFIG.messages.length) {
+            goToSlide(target);
+        }
     }
 
     function goToSlide(n) {
-        document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
-        document.getElementById(`slide-${n}`).classList.add('active');
-        currentSlide = n;
+        currentIdx = n;
+        const total = CONFIG.messages.length;
+        
+        // Progress Bar
+        document.getElementById('progress-bar').style.width = ((n + 1) / total) * 100 + "%";
+        
+        // Buttons
+        document.getElementById('prevBtn').style.display = (n === 0) ? 'none' : 'block';
+        document.getElementById('nextBtn').style.display = (n === total - 1) ? 'none' : 'block';
+        document.getElementById('restartBtn').style.display = (n === total - 1) ? 'block' : 'none';
 
-        document.getElementById('progress-bar').style.width = (n / totalSlides) * 100 + "%";
-        document.getElementById('prevBtn').disabled = (n === 1);
-        document.getElementById('nextBtn').style.display = (n === totalSlides) ? 'none' : 'block';
+        // Typewriter Effect
+        typeEffect(document.getElementById('type-area'), CONFIG.messages[n]);
 
-        typeEffect(document.getElementById(`text-${n}`), CONFIG.messages[n]);
-
-        if (n === totalSlides) {
+        // Celebrate on the very last slide
+        if (n === total - 1) {
             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
         }
     }

@@ -42,7 +42,7 @@
             -webkit-backdrop-filter: blur(10px);
             width: 85%;
             max-width: 500px;
-            min-height: 420px;
+            min-height: 480px;
             padding: 35px;
             border-radius: 24px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
@@ -61,15 +61,29 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        .countdown-timer {
+            background: rgba(108, 92, 231, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .timer-digits { font-size: 1.2rem; display: block; margin-top: 5px; color: #e73c7e; }
+
+        p { color: #444; line-height: 1.6; font-size: 1.2rem; min-height: 130px; display: flex; align-items: center; justify-content: center; margin: 20px 0;}
+        .icon-box { font-size: 3.5rem; margin-bottom: 10px; height: 70px; }
+
         @keyframes pulse {
             0% { transform: scale(1); filter: drop-shadow(0 0 0px #f1c40f); }
             50% { transform: scale(1.3); filter: drop-shadow(0 0 15px #f1c40f); }
             100% { transform: scale(1); filter: drop-shadow(0 0 0px #f1c40f); }
         }
         .pulse-star { animation: pulse 1.5s infinite ease-in-out; display: inline-block; }
-
-        p { color: #444; line-height: 1.6; font-size: 1.2rem; min-height: 130px; display: flex; align-items: center; justify-content: center; margin: 20px 0;}
-        .icon-box { font-size: 3.5rem; margin-bottom: 10px; height: 70px; }
 
         .typewriter::after { content: "|"; animation: blink 0.7s infinite; }
         @keyframes blink { 50% { opacity: 0; } }
@@ -79,7 +93,6 @@
         
         button { padding: 12px 25px; border: none; border-radius: 12px; background: var(--primary); color: white; font-weight: bold; cursor: pointer; transition: all 0.2s; }
         button:hover { transform: translateY(-2px); filter: brightness(1.1); }
-        button:disabled { background: #ccc; cursor: not-allowed; }
         .secondary-btn { background: rgba(0,0,0,0.05); color: #555; }
     </style>
 </head>
@@ -91,10 +104,15 @@
     <div id="slide-0" class="slide active">
         <div class="icon-box"><i class="fas fa-heart" style="color: #e73c7e;"></i></div>
         <h2>A Message for You</h2>
-        <p>Please enter your name to begin:</p>
+        
+        <div class="countdown-timer" id="timer">
+            Preparing your countdown...
+        </div>
+
+        <p style="min-height: auto; margin: 10px 0; font-size: 1rem;">Enter your name to begin:</p>
         <input type="text" id="nameInput" placeholder="Enter your name...">
         <br>
-        <button onclick="checkName()">Unlock</button>
+        <button onclick="checkName()">Unlock Card</button>
     </div>
 
     <div id="message-container" class="slide">
@@ -112,6 +130,8 @@
 <script>
     const CONFIG = {
         recipient: "Rachael",
+        // KJSEA Main Exams start Monday, Oct 26, 2026
+        examDate: new Date("Oct 26, 2026 08:30:00").getTime(),
         messages: [
             "Dear Rachael, I hope you are doing well.",
             "As you prepare for your KJSEA exams at the end of the year, I want you to remember something very important.",
@@ -137,15 +157,36 @@
             "Wishing you success and strength as you prepare.",
             "With encouragement and belief in you, [T.I.A]"
         ],
-        speed: 40 // Back to your original speed
+        speed: 40
     };
 
     let currentIdx = -1;
-    let typingTimer = null; 
+    let typingTimer = null;
+
+    // Real-time Countdown Function
+    const countdownInterval = setInterval(function() {
+        const now = new Date().getTime();
+        const distance = CONFIG.examDate - now;
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        const timerEl = document.getElementById('timer');
+
+        if (distance < 0) {
+            clearInterval(countdownInterval);
+            timerEl.innerHTML = "🌟 EXAM SEASON IS HERE!<br><span class='timer-digits'>You've got this, Rachael!</span>";
+        } else {
+            timerEl.innerHTML = `TIME TO SUCCESS:<br><span class="timer-digits">${days}d ${hours}h ${minutes}m ${seconds}s</span>`;
+        }
+    }, 1000);
 
     function checkName() {
         const val = document.getElementById('nameInput').value.trim().toLowerCase();
         if (val === CONFIG.recipient.toLowerCase()) {
+            clearInterval(countdownInterval); // Stop timer when card unlocks
             document.getElementById('slide-0').style.display = 'none';
             document.getElementById('message-container').style.display = 'block';
             goToSlide(0);
@@ -157,7 +198,7 @@
     function changeSlide(n) {
         let target = currentIdx + n;
         if (target >= 0 && target < CONFIG.messages.length) {
-            clearTimeout(typingTimer); 
+            clearTimeout(typingTimer);
             goToSlide(target);
         }
     }

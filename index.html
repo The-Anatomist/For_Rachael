@@ -4,78 +4,247 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>For Rachael</title>
+    
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.85em%22 font-size=%2285%22>⭐</text></svg>">
+    
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        :root { --primary: #6c5ce7; --accent: #a29bfe; --glass: rgba(255, 255, 255, 0.9); }
+        :root {
+            --primary: #6c5ce7;
+            --accent: #a29bfe;
+            --glass: rgba(255, 255, 255, 0.9);
+        }
+
         body {
-            margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             font-family: 'Segoe UI', Tahoma, sans-serif;
             background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%; animation: gradientBG 15s ease infinite; overflow: hidden;
-            user-select: none; -webkit-user-select: none; cursor: default;
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            overflow: hidden;
+            /* PREVENTS CURSOR/SELECTION ON BACKGROUND */
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            cursor: default;
         }
-        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        #progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 8px; background: rgba(0,0,0,0.1); z-index: 1000; }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        #progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
         #progress-bar { 
-            height: 100%; width: 0%; background: linear-gradient(90deg, #a29bfe, #e73c7e, #f1c40f); 
-            box-shadow: 0 0 15px rgba(231, 60, 126, 0.5); transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 0 10px 10px 0;
+            height: 100%; 
+            width: 0%; 
+            background: linear-gradient(90deg, #a29bfe, #e73c7e, #f1c40f); 
+            box-shadow: 0 0 15px rgba(231, 60, 126, 0.5); 
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-radius: 0 10px 10px 0;
         }
+
         .card {
-            background: var(--glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            width: 85%; max-width: 500px; min-height: 480px; padding: 35px; border-radius: 24px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2); text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            width: 85%;
+            max-width: 500px;
+            min-height: 480px;
+            padding: 35px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
         }
+
         #muteBtn {
-            position: absolute; top: 20px; right: 20px; background: rgba(108, 92, 231, 0.1);
-            color: var(--primary); border: none; width: 40px; height: 40px; border-radius: 50%;
-            cursor: pointer; display: none; align-items: center; justify-content: center; font-size: 1.2rem; transition: all 0.3s; z-index: 10;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(108, 92, 231, 0.1);
+            color: var(--primary);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none; 
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            z-index: 10;
         }
-        .slide { display: none; animation: slideIn 0.5s ease forwards; }
-        .active { display: block; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .countdown-timer { background: rgba(108, 92, 231, 0.1); padding: 15px; border-radius: 15px; margin-bottom: 20px; font-family: 'Courier New', monospace; font-weight: bold; color: var(--primary); font-size: 0.95rem; }
-        .timer-digits { font-size: 1.2rem; display: block; margin-top: 5px; color: #e73c7e; }
-        p { color: #444; line-height: 1.6; font-size: 1.2rem; min-height: 130px; display: flex; align-items: center; justify-content: center; margin: 20px 0;}
-        .icon-box { font-size: 3.5rem; margin-bottom: 10px; height: 70px; }
-        .typewriter::after { content: "|"; animation: blink 0.7s infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
+
+        .slide {
+            display: none;
+            animation: slideIn 0.5s ease forwards;
+        }
+
+        .active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .countdown-timer {
+            background: rgba(108, 92, 231, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .timer-digits {
+            font-size: 1.2rem;
+            display: block;
+            margin-top: 5px;
+            color: #e73c7e;
+        }
+
+        p {
+            color: #444;
+            line-height: 1.6;
+            font-size: 1.2rem;
+            min-height: 130px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .icon-box {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            height: 70px;
+        }
+
+        .typewriter::after {
+            content: "|";
+            animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
         input { 
-            padding: 12px; border: 2px solid var(--accent); border-radius: 12px; width: 80%; 
-            margin-bottom: 20px; text-align: center; font-size: 1rem; outline: none; user-select: text; -webkit-user-select: text; cursor: text;
+            padding: 12px;
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            width: 80%; 
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1rem;
+            outline: none;
+            /* ALLOWS TYPING IN THE BOX ONLY */
+            user-select: text;
+            -webkit-user-select: text;
+            cursor: text;
         }
-        button { padding: 12px 25px; border: none; border-radius: 12px; background: var(--primary); color: white; font-weight: bold; cursor: pointer; transition: all 0.2s; }
-        .secondary-btn { background: rgba(0,0,0,0.05); color: #555; }
+        
+        .btn-group {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            min-height: 50px;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 12px;
+            background: var(--primary);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        .secondary-btn {
+            background: rgba(0,0,0,0.05);
+            color: #555;
+        }
     </style>
 </head>
 <body>
-<audio id="bgMusic" loop><source src="Unstoppable.m4a" type="audio/mp4"></audio>
-<div id="progress-container"><div id="progress-bar"></div></div>
+
+<audio id="bgMusic" loop>
+    <source src="Unstoppable.m4a" type="audio/mp4">
+</audio>
+
+<div id="progress-container">
+    <div id="progress-bar"></div>
+</div>
+
 <div class="card">
-    <button id="muteBtn" onclick="toggleMute()"><i id="muteIcon" class="fas fa-volume-up"></i></button>
+    <button id="muteBtn" onclick="toggleMute()">
+        <i id="muteIcon" class="fas fa-volume-up"></i>
+    </button>
+
     <div id="slide-0" class="slide active">
         <div class="icon-box"><i class="fas fa-heart" style="color: #e73c7e;"></i></div>
         <h2 id="main-greeting">A Message for You</h2>
-        <div class="countdown-timer" id="timer">Calculating...</div>
+        
+        <div class="countdown-timer" id="timer">
+            Calculating time...
+        </div>
+
         <p style="min-height: auto; margin: 10px 0; font-size: 1rem;">Enter your name to begin:</p>
         <input type="text" id="nameInput" placeholder="Enter your name..." autocomplete="off">
-        <br><button onclick="checkName()">Unlock Card</button>
+        <br>
+        <button onclick="checkName()">Unlock Card</button>
     </div>
+
     <div id="message-container" class="slide">
         <div class="icon-box" id="dynamic-icon"></div>
         <p id="type-area" class="typewriter"></p>
+        
         <div class="btn-group">
-            <button id="prevBtn" class="secondary-btn" onclick="changeSlide(-1)" style="display:none;">Back</button>
+            <button id="prevBtn" class="secondary-btn" onclick="changeSlide(-1)">Back</button>
             <button id="nextBtn" onclick="changeSlide(1)">Next</button>
             <button id="restartBtn" class="secondary-btn" onclick="location.reload()" style="display:none;">Read Again</button>
         </div>
     </div>
 </div>
+
 <script>
     const CONFIG = {
-        recipient: "Rachael", examDate: new Date("Oct 26, 2026 08:30:00").getTime(), speed: 40,
+        recipient: "Rachael",
+        examDate: new Date("Oct 26, 2026 08:30:00").getTime(),
         messages: [
             "Dear Rachael, I hope you are doing well.",
             "As you prepare for your KJSEA exams at the end of the year, I want you to remember something very important.",
@@ -100,51 +269,132 @@
             "I am proud of you, Rachael, and confident that you will do your best.",
             "Wishing you success and strength as you prepare.",
             "With encouragement and belief in you, [T.I.A]"
-        ]
+        ],
+        speed: 40
     };
-    let currentIdx = -1; let typingTimer = null; let isMuted = false;
-    window.onload = () => document.getElementById('nameInput').focus();
-    document.getElementById('nameInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkName(); });
-    const countdownInterval = setInterval(() => {
-        const now = new Date().getTime(); const distance = CONFIG.examDate - now;
-        const d = Math.floor(distance / (86400000)); const h = Math.floor((distance % 86400000) / 3600000);
-        const m = Math.floor((distance % 3600000) / 60000); const s = Math.floor((distance % 60000) / 1000);
-        document.getElementById('timer').innerHTML = `COUNTDOWN TO SUCCESS:<br><span class="timer-digits">${d}d ${h}h ${m}m ${s}s</span>`;
+
+    let currentIdx = -1;
+    let typingTimer = null;
+    let isMuted = false;
+
+    // AUTO-FOCUS ON INPUT FIELD
+    window.onload = function() {
+        document.getElementById('nameInput').focus();
+    };
+
+    // ENTER KEY SUPPORT
+    document.getElementById('nameInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            checkName();
+        }
+    });
+
+    // COUNTDOWN LOGIC
+    const countdownInterval = setInterval(function() {
+        const now = new Date().getTime();
+        const distance = CONFIG.examDate - now;
+        
+        const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((distance % (1000 * 60)) / 1000);
+        
+        const timerEl = document.getElementById('timer');
+        timerEl.innerHTML = `COUNTDOWN TO SUCCESS:<br><span class="timer-digits">${d}d ${h}h ${m}m ${s}s</span>`;
     }, 1000);
+
+    // NAME CHECK & UNLOCK
     function checkName() {
         const val = document.getElementById('nameInput').value.trim().toLowerCase();
+        
         if (val === CONFIG.recipient.toLowerCase()) {
             clearInterval(countdownInterval);
+            
+            // Audio setup at 95%
             const music = document.getElementById('bgMusic');
-            music.volume = 0.95; music.play().catch(e => console.log("Audio blocked."));
+            music.volume = 0.95; 
+            music.play().catch(e => console.log("Audio requires user interaction first."));
+            
+            // UI Transition
             document.getElementById('muteBtn').style.display = 'flex'; 
             document.getElementById('main-greeting').innerText = "For you, Rachael";
             document.getElementById('slide-0').style.display = 'none';
             document.getElementById('message-container').style.display = 'block';
+            
             goToSlide(0);
-        } else { alert("This card is specifically for Rachael!"); }
+        } else {
+            alert("This card is specifically for Rachael!");
+        }
     }
+
+    // MUTE TOGGLE
     function toggleMute() {
-        const music = document.getElementById('bgMusic'); const icon = document.getElementById('muteIcon');
-        isMuted = !isMuted; music.muted = isMuted; icon.className = isMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+        const music = document.getElementById('bgMusic');
+        const icon = document.getElementById('muteIcon');
+        isMuted = !isMuted;
+        music.muted = isMuted;
+        
+        if (isMuted) {
+            icon.className = 'fas fa-volume-mute';
+        } else {
+            icon.className = 'fas fa-volume-up';
+        }
     }
-    function changeSlide(n) { let target = currentIdx + n; if (target >= 0 && target < CONFIG.messages.length) { clearTimeout(typingTimer); goToSlide(target); } }
+
+    // NAVIGATION
+    function changeSlide(n) {
+        let target = currentIdx + n;
+        if (target >= 0 && target < CONFIG.messages.length) {
+            clearTimeout(typingTimer);
+            goToSlide(target);
+        }
+    }
+
+    // SLIDE CONTENT UPDATE
     function goToSlide(n) {
-        currentIdx = n; const total = CONFIG.messages.length; const iconArea = document.getElementById('dynamic-icon');
+        currentIdx = n;
+        const total = CONFIG.messages.length;
+        const iconArea = document.getElementById('dynamic-icon');
+        
+        // Progress Bar
         document.getElementById('progress-bar').style.width = ((n + 1) / total) * 100 + "%";
-        if (n < 5) iconArea.innerHTML = '<i class="fas fa-book-open" style="color: var(--primary);"></i>';
-        else if (n < 15) iconArea.innerHTML = '<i class="fas fa-lightbulb" style="color: #f1c40f;"></i>';
-        else if (n < total - 1) iconArea.innerHTML = '<i class="fas fa-graduation-cap" style="color: #3498db;"></i>';
-        else iconArea.innerHTML = '<div style="animation: pulse 1s infinite;"><i class="fas fa-star" style="color: #f1c40f;"></i></div>';
-        document.getElementById('prevBtn').style.display = n === 0 ? 'none' : 'inline-block';
-        document.getElementById('nextBtn').style.display = n === total - 1 ? 'none' : 'inline-block';
-        document.getElementById('restartBtn').style.display = n === total - 1 ? 'inline-block' : 'none';
+        
+        // Icons
+        if (n < 5) {
+            iconArea.innerHTML = '<i class="fas fa-book-open" style="color: var(--primary);"></i>';
+        } else if (n < 15) {
+            iconArea.innerHTML = '<i class="fas fa-lightbulb" style="color: #f1c40f;"></i>';
+        } else if (n < total - 1) {
+            iconArea.innerHTML = '<i class="fas fa-graduation-cap" style="color: #3498db;"></i>';
+        } else {
+            iconArea.innerHTML = '<div style="animation: pulse 1s infinite;"><i class="fas fa-star" style="color: #f1c40f;"></i></div>';
+        }
+
+        // Button Visibility
+        document.getElementById('prevBtn').style.display = (n === 0) ? 'none' : 'inline-block';
+        document.getElementById('nextBtn').style.display = (n === total - 1) ? 'none' : 'inline-block';
+        document.getElementById('restartBtn').style.display = (n === total - 1) ? 'inline-block' : 'none';
+
+        // Typewriter Effect
         typeEffect(document.getElementById('type-area'), CONFIG.messages[n]);
-        if (n === total - 1) confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+        
+        // Final Confetti
+        if (n === total - 1) {
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+        }
     }
+
+    // TYPEWRITER LOGIC
     function typeEffect(el, text) {
-        el.innerHTML = ""; let i = 0;
-        function play() { if (i < text.length) { el.innerHTML += text.charAt(i); i++; typingTimer = setTimeout(play, CONFIG.speed); } }
+        el.innerHTML = "";
+        let i = 0;
+        function play() {
+            if (i < text.length) {
+                el.innerHTML += text.charAt(i);
+                i++;
+                typingTimer = setTimeout(play, CONFIG.speed);
+            }
+        }
         play();
     }
 </script>

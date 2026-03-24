@@ -215,9 +215,10 @@
         <i id="muteIcon" class="fas fa-volume-up"></i>
     </button>
 
+    <h2 id="main-greeting" style="margin-top: 0;">A Message for You</h2>
+
     <div id="slide-0" class="slide active">
         <div class="icon-box"><i class="fas fa-heart" style="color: #e73c7e;"></i></div>
-        <h2 id="main-greeting">A Message for You</h2>
         
         <div class="countdown-timer" id="timer">
             Calculating time...
@@ -229,6 +230,17 @@
         <button onclick="checkName()">Unlock Card</button>
     </div>
 
+    <div id="message-container" class="slide">
+        <div class="icon-box" id="dynamic-icon"></div>
+        <p id="type-area" class="typewriter"></p>
+        
+        <div class="btn-group">
+            <button id="prevBtn" class="secondary-btn" onclick="changeSlide(-1)">Back</button>
+            <button id="nextBtn" onclick="changeSlide(1)">Next</button>
+            <button id="restartBtn" class="secondary-btn" onclick="location.reload()" style="display:none;">Read Again</button>
+        </div>
+    </div>
+</div>
     <div id="message-container" class="slide">
         <div class="icon-box" id="dynamic-icon"></div>
         <p id="type-area" class="typewriter"></p>

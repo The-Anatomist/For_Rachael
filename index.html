@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>For Rachael</title>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="icon" href="https://fav.farm/💜" />
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/contetti.browser.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
@@ -33,17 +34,17 @@
             100% { background-position: 0% 50%; }
         }
 
-        #progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 6px; background: rgba(0,0,0,0.1); z-index: 1000; }
+        #progress-container { position: fixed; top: 0; left: 0; width: 100%; height: 8px; background: rgba(0,0,0,0.1); z-index: 1000; }
+        
         #progress-bar { 
-    height: 100%; 
-    width: 0%; 
-    /* This creates the purple-to-pink gradient */
-    background: linear-gradient(90deg, #a29bfe, #e73c7e, #f1c40f); 
-    /* This adds a glow that matches the bar */
-    box-shadow: 0 0 15px rgba(231, 60, 126, 0.5); 
-    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
-    border-radius: 0 10px 10px 0;
-}
+            height: 100%; 
+            width: 0%; 
+            background: linear-gradient(90deg, #a29bfe, #e73c7e, #f1c40f); 
+            box-shadow: 0 0 15px rgba(231, 60, 126, 0.5); 
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+            border-radius: 0 10px 10px 0;
+        }
+
         .card {
             background: var(--glass);
             backdrop-filter: blur(10px);
@@ -60,6 +61,26 @@
             justify-content: center;
             position: relative;
         }
+
+        #muteBtn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(108, 92, 231, 0.1);
+            color: var(--primary);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none; 
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+        #muteBtn:hover { background: rgba(108, 92, 231, 0.2); transform: scale(1.1); }
 
         .slide { display: none; animation: slideIn 0.5s ease forwards; }
         .active { display: block; }
@@ -113,14 +134,12 @@
 <div id="progress-container"><div id="progress-bar"></div></div>
 
 <div class="card">
+    <button id="muteBtn" onclick="toggleMute()"><i id="muteIcon" class="fas fa-volume-up"></i></button>
+
     <div id="slide-0" class="slide active">
         <div class="icon-box"><i class="fas fa-heart" style="color: #e73c7e;"></i></div>
         <h2>A Message for You</h2>
-        
-        <div class="countdown-timer" id="timer">
-            Preparing your countdown...
-        </div>
-
+        <div class="countdown-timer" id="timer">Preparing your countdown...</div>
         <p style="min-height: auto; margin: 10px 0; font-size: 1rem;">Enter your name to begin:</p>
         <input type="text" id="nameInput" placeholder="Enter your name...">
         <br>
@@ -130,7 +149,6 @@
     <div id="message-container" class="slide">
         <div class="icon-box" id="dynamic-icon"></div>
         <p id="type-area" class="typewriter"></p>
-        
         <div class="btn-group">
             <button id="prevBtn" class="secondary-btn" onclick="changeSlide(-1)">Back</button>
             <button id="nextBtn" onclick="changeSlide(1)">Next</button>
@@ -173,15 +191,13 @@
 
     let currentIdx = -1;
     let typingTimer = null;
+    let isMuted = false;
 
-    // Enter key listener
-    document.getElementById('nameInput').addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            checkName();
-        }
+    document.getElementById('nameInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') checkName();
     });
 
-    const countdownInterval = setInterval(function() {
+    const countdownInterval = setInterval(() => {
         const now = new Date().getTime();
         const distance = CONFIG.examDate - now;
         const days = Math.floor(distance / (1000 * 60 * 60 * 24));
@@ -202,10 +218,13 @@
         const val = document.getElementById('nameInput').value.trim().toLowerCase();
         if (val === CONFIG.recipient.toLowerCase()) {
             clearInterval(countdownInterval);
-            
-            // START MUSIC HERE
             const music = document.getElementById('bgMusic');
-            music.play().catch(e => console.log("Audio play blocked until interaction."));
+            const muteBtn = document.getElementById('muteBtn');
+            
+            // IMMEDIATE START AT 95%
+            music.volume = 0.95; 
+            music.play().catch(e => console.log("Audio blocked."));
+            muteBtn.style.display = 'flex'; 
             
             document.getElementById('slide-0').style.display = 'none';
             document.getElementById('message-container').style.display = 'block';
@@ -213,6 +232,14 @@
         } else {
             alert("This card is specifically for Rachael!");
         }
+    }
+
+    function toggleMute() {
+        const music = document.getElementById('bgMusic');
+        const icon = document.getElementById('muteIcon');
+        isMuted = !isMuted;
+        music.muted = isMuted;
+        icon.className = isMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
     }
 
     function changeSlide(n) {
@@ -249,10 +276,7 @@
         document.getElementById('restartBtn').style.display = (n === total - 1) ? 'block' : 'none';
 
         typeEffect(document.getElementById('type-area'), CONFIG.messages[n]);
-
-        if (n === total - 1) {
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-        }
+        if (n === total - 1) confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
     }
 
     function typeEffect(el, text) {
